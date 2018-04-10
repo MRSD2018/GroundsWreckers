@@ -18,8 +18,11 @@ void apriltag_detection_callback(const apriltags_ros::AprilTagDetectionArray msg
   
   //get the data from the message
   unsigned int landmark_id = msg.detections[0].id;
-  double delta_x = msg.detection[0].pose.pose.position.x + 0.93209511; //hardcode the offset from camera to base because easier
-  double delta_y = msg.detection[0].pose.pose.position.y;
+
+  //apriltags says z is forward, but we like it better when x is forward...
+  double delta_x = msg.detection[0].pose.pose.position.z + 0.93209511; //hardcode the offset from camera to base because easier
+  double delta_y = msg.detection[0].pose.pose.position.x;
+
   ros::Time timestamp_sec = msg.detection[0].pose.header.stamp.sec; //TODO: stamp.sec?? stamp.nsec??
   ros::Time timestamp_nano = msg.detection[0].pose.header.stamp.nsec;
 
