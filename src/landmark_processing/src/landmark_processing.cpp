@@ -9,7 +9,7 @@
 #include <fstream>
 
 ros::Subscriber sub;
-ImageConverter *ic;
+//ImageConverter *ic;
 
 void apriltag_detection_callback(const apriltags_ros::AprilTagDetectionArray msg)
 {
@@ -22,16 +22,21 @@ void apriltag_detection_callback(const apriltags_ros::AprilTagDetectionArray msg
   //apriltags says z is forward, but we like it better when x is forward...
   double delta_x = msg.detection[0].pose.pose.position.z + 0.93209511; //hardcode the offset from camera to base because easier
   double delta_y = msg.detection[0].pose.pose.position.x;
+  double delta_z = 0;
+
+  std::cout << "Tag position: " << delta_x << ", " << delta_y << ", " << delta_z << std::endl;
 
   ros::Time timestamp_sec = msg.detection[0].pose.header.stamp.sec; //TODO: stamp.sec?? stamp.nsec??
   ros::Time timestamp_nano = msg.detection[0].pose.header.stamp.nsec;
+
+  std::cout << "Time: " << timestamp_sec << "\tnano: " << timestamp_nano << endl;
 
   //get timestamp into correct format 
 
   /* comment this out for now for testing porpoises
   //Dump to csv
   std::ofstream out("landmarks.csv", std::ios::app);
-  out << timestamp << "," <<  landmark_i d<< "," << x << "," << y  << std::endl;
+  out << timestamp << "," <<  landmark_i d<< "," << x << "," << y  << "," << z << std::endl;
   out.close();
   */
 }
@@ -42,7 +47,7 @@ int main(int argc, char** argv)
 
   ros::NodeHandle n;
 
-  ImageCoverter converter;
+ // ImageCoverter converter;
 
   ic = &converter;
   sub = n.subscribe("tag_detections", 1000, apriltag_detection_callback);

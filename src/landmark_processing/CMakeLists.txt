@@ -10,10 +10,10 @@ project(landmark_processing)
 find_package(catkin REQUIRED COMPONENTS
   apriltags_ros
   cv_bridge
-  geometry_mesgs
+  geometry_msgs
   image_transport
   roscpp
-  sensor_messages
+  sensor_msgs
   std_msgs
   tf
 )
@@ -110,7 +110,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES landmark_processing
-#  CATKIN_DEPENDS apriltags_ros cv_bridge geometry_mesgs image_transport roscpp sensor_messages std_msgs tf
+#  CATKIN_DEPENDS apriltags_ros cv_bridge geometry_msgs image_transport roscpp sensor_msgs std_msgs tf
 #  DEPENDS system_lib
 )
 
