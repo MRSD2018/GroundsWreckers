@@ -5,6 +5,7 @@
 % Arguments: 
 %     rx    - robot's x position
 %     ry    - robot's y position
+%     rth   - robot's angle in world frame
 %     lx    - landmark's x position
 %     ly    - landmark's y position
 %
@@ -12,16 +13,16 @@
 %     h     - odometry measurement prediction = [ theta 
 %                                                   d  ]
 %
-function h = meas_landmark(rx, ry, lx, ly)
+function h = meas_landmark(rx, ry, rth, lx, ly)
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   h = [ ];
-  theta = atan2 (   ly - ry     ,   lx - rx );
-  d     = sqrt  ( ( lx - rx )^2 + ( ly - ry )^2 );
-  h ( 1 , 1 ) = theta;
-  h ( 2 , 1 ) = d;
+  deltax = cos ( rth ) * ( lx - rx ) + sin ( rth ) * ( ly - ry );
+  deltay = sin ( rth ) * ( lx - rx ) + sin ( rth ) * ( ly - ry );
+  h ( 1 , 1 ) = deltax;
+  h ( 2 , 1 ) = deltay;
 end
   
   
