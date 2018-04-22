@@ -10,6 +10,7 @@
 %
 function slam_2D_nonlinear()
 %% Load data
+%TODO: MODIFY THIS TO TAKE IN OUR DATA FORM
 close all; clc; 
 addpath('../util');
 load('../../data/2D_nonlinear.mat');
@@ -52,7 +53,7 @@ for i = 1:n_poses
     for j = 1:size(new_obs,1)
         landmark_idx = new_obs(j, 2);
         if isnan(all_landmarks(landmark_idx, 1))
-            all_landmarks(landmark_idx, :) = project_br_measurement(poses(tps:tpe), new_obs(j, 3:end));
+            all_landmarks(landmark_idx, :) = project_measurement(poses(tps:tpe), new_obs(j, 3:end));
             n_seen = n_seen + 1;
         end
     end
@@ -73,9 +74,7 @@ for i = 1:n_poses
     x0 = [poses; landmark_vec];
    
     %%%% Update the solution using Gauss-Newton algorithm %%%%
-    if i == 44
-      fprintf ("fuck");
-    end
+
     if i > 1
         x = gauss_newton(x0, odom(1:i-1,:), obs, sigma_odom, sigma_landmark);
     else
