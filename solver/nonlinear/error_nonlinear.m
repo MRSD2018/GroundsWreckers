@@ -82,7 +82,7 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark)
     vr =  odom ( u  , 2 );
 
     L = .508; %Wheelbase of GroundsBot
-    odom_z = meas_odom_z(vr, vl, rt, L);
+    odom_z = meas_odom_z(vl, vr, rt2);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% set b %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

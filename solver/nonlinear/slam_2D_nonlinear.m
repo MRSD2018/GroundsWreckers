@@ -13,7 +13,7 @@ function slam_2D_nonlinear()
 %TODO: MODIFY THIS TO TAKE IN OUR DATA FORM
 close all; clc; 
 addpath('../util');
-load('../../data/2D_nonlinear.mat');
+load('C:\Users\dezeu\OneDrive\Documents\David\CMU\16-833\16833_hw3\data/2D_nonlinear.mat');
 
 %% Extract useful info
 n_poses = size(gt_traj, 1);
