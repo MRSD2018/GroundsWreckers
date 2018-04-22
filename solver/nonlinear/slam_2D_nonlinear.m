@@ -11,18 +11,35 @@
 function slam_2D_nonlinear()
 %% Load data
 %TODO: MODIFY THIS TO TAKE IN OUR DATA FORM
+%{
+ gt_landmarks          100x2                1600  double              
+  gt_traj              1000x2               16000  double              
+  landmarks            1089x5               43560  double              
+  observations        52566x4             1682112  double              
+  odom                  999x2               15984  double              
+  sigma_landmark          2x2                  32  double              
+  sigma_odom              2x2                  32  double   
+%}
 close all; clc; 
 addpath('../util');
-load('../../data/2D_nonlinear.mat');
+odom        = csvread('../../csv/odom.csv');
+odom = odom ( : , 2:3 )
+observations = csvread ('../../csv/landmarks.csv');
+%load('../../csv/odom.csv');
+%gt_traj = odom;
+%gt_landmarks = observations ( ;
 
 %% Extract useful info
 n_poses = size(gt_traj, 1);
-n_landmarks = size(gt_landmarks, 1);
+%n_landmarks = size(gt_landmarks, 1);
+n_landmarks = 210;
 n_odom = size(odom, 1);
 n_obs  = size(observations, 1);
 
-p_dim = size(gt_traj, 2);
-l_dim = size(gt_landmarks, 2);
+%p_dim = size(gt_traj, 2);
+p_dim = 3;
+%l_dim = size(gt_landmarks, 2);
+l_dim = 2;
 o_dim = size(odom, 2);
 m_dim = size(observations(1, 3:end), 2);
 
@@ -33,7 +50,7 @@ M = o_dim*(n_odom+1) + m_dim*n_obs;     % +1 for prior on the first pose
 %% Solve the SLAM problem at each step
 
 % Book-keeping
-poses = [0; 0];
+poses = [0; 0; 0];
 all_landmarks = nan(n_landmarks, l_dim);
 n_seen = 0;
 
@@ -44,7 +61,7 @@ for i = 1:n_poses
     lpe = (i-1)*p_dim;
     if (i > 1)
         % Update pose with odometry
-        poses(tps:tpe) = poses(lps:lpe) + odom(i-1, :)';
+        poses(tps:tpe) = poses(lps:lpe) + meas_odom_z ( odom(i-1, :) , poses (lpe) ); % was transpose...
     end
     
     %%%% Add new landmarks %%%%
