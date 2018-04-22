@@ -145,16 +145,16 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
     H_sub = meas_landmark_jacobian( rx , ry , rt, lx , ly );
 
 
-    dDX_drx = H ( 1 , 1 );
-    dDX_dry = H ( 1 , 2 );
-    dDX_drt = H ( 1 , 3 );
-    dDX_dlx = H ( 1 , 4 );
-    dDX_dly = H ( 1 , 5 );
-    dDY_drx = H ( 2 , 1 );
-    dDY_dry = H ( 2 , 2 );
-    dDY_drt = H ( 2 , 3 );
-    dDY_dlx = H ( 2 , 4 );
-    dDY_dly = H ( 2 , 5 ); 
+    dDX_drx = H_sub ( 1 , 1 );
+    dDX_dry = H_sub ( 1 , 2 );
+    dDX_drt = H_sub( 1 , 3 );
+    dDX_dlx = H_sub ( 1 , 4 );
+    dDX_dly = H_sub ( 1 , 5 );
+    dDY_drx = H_sub ( 2 , 1 );
+    dDY_dry = H_sub ( 2 , 2 );
+    dDY_drt = H_sub ( 2 , 3 );
+    dDY_dlx = H_sub ( 2 , 4 );
+    dDY_dly = H_sub ( 2 , 5 ); 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Predict measurement based on x %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
