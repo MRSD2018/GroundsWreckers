@@ -1,0 +1,28 @@
+% SOLVE_CHOL2
+% 16-831 Fall 2016 - *Stub* Provided
+% Solves linear system using second Cholesky method
+%
+% Arguments: 
+%     A     - A matrix from linear system that you generate yourself
+%     b     - b vector from linear system that you generate yourself
+%
+% Returns:
+%     x     - solution to the linear system, computed using the specified
+%             version of the Cholesky decomposition
+%     R     - R factor from the Cholesky decomposition
+%
+function [x, R] = solve_chol2(A, b)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  AtA = A' * A;  %one leg short of an at-at
+  %p = colamd ( AtA ); 
+  p = symrcm(AtA);
+  R = chol        ( AtA ( p , p ));
+  y = forward_sub ( R' , A ( : , p )'  * b )
+  x = back_sub    ( R  , y      )
+  x ( p ) = x
+
+end
