@@ -28,7 +28,6 @@ observations = csvread ('../../csv/landmarks.csv');
 %load('../../csv/odom.csv');
 %gt_traj = odom;
 %gt_landmarks = observations ( ;
-
 %% Extract useful info
 n_poses = size(gt_traj, 1);
 %n_landmarks = size(gt_landmarks, 1);

@@ -104,7 +104,7 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
     vr =  odom ( u  , 2 );
 
     L = .508; %Wheelbase of GroundsBot
-    odom_z = meas_odom_z(vr, vl, rt, L);
+    odom_z = meas_odom_z(vl, vr, rt2);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% set b %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
