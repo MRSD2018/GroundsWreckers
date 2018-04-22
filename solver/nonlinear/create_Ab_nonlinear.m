@@ -34,7 +34,7 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
   n_obs  = size(obs, 1);
 
   % Dimensions of state variables and measurements (all 2 in this case)
-  p_dim = 2;                                  % pose dimension
+  p_dim = 3;                                  % pose dimension
   l_dim = 2;                                  % landmark dimension
   o_dim = size(odom, 2);                      % odometry dimension
   m_dim = size(obs(1, 3:end), 2);             % landmark measurement dimension
@@ -82,36 +82,49 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Predict measurement %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ixu = 2*u;
+    ixu = p_dim*u;
     rx1 = x ( ixu - 1 );
     ry1 = x ( ixu + 0 );
-    rx2 = x ( ixu + 1 );
-    ry2 = x ( ixu + 2 );
-    h   = meas_odom(rx1, ry1, rx2, ry2);
+    rt1 = x ( ixu + 1 );
+    rx2 = x ( ixu + 2 );
+    ry2 = x ( ixu + 3 );
+    rt2 = x ( ixu + 4 );
+    
+    h   = meas_odom(rx1, ry1, rt1, rx2, ry2, rt2);
     dxp = h ( 1 );
     dyp = h ( 2 );
+    dtp = h ( 3 );
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% slice measurement %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    odom_x =  odom ( u  , 1 );
-    odom_y =  odom ( u  , 2 );
+    
+    %TODO: CHECK IF ODOM INPUT IS ORDERED VL; VR or VR; VL
+    vl =  odom ( u  , 1 );
+    vr =  odom ( u  , 2 );
+
+    L = .508; %Wheelbase of GroundsBot
+    odom_z = meas_odom_z(vr, vl, rt, L);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% set b %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    b ( ixu +1 ) = sigma_o * ( odom_x - dxp ) ;
-    b ( ixu +2 ) = sigma_o * ( odom_y - dyp ) ;
+    b ( ixu +1 ) = sigma_o * ( odom_z(1) - dxp ) ;
+    b ( ixu +2 ) = sigma_o * ( odom_z(2) - dyp ) ;
+    b ( ixu +3 ) = sigma_o * ( odom_z(3) - dtp);
   end
 
   for o = 0 : n_obs -1
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Extract values from observation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   
+    %TODO: CHECK TO SEE IF INDEX TO GET POSE AND OBSERVATION ID IS CORRECT
     i   = obs ( o + 1 , 1 ); % pose i at observation o
     l   = obs ( o + 1 , 2 ); % landmark at obseravation o
-    lth = obs ( o + 1 , 3 ); % delta x to landmark
-    ld  = obs ( o + 1 , 4 ); % delta y to landmark
+    
+    DX = obs ( o + 1 , 3 ); % delta x to landmark
+    DY  = obs ( o + 1 , 4 ); % delta y to landmark
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Define matrix offsets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -126,47 +139,53 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     rx = x ( pos_off     + 1 );
     ry = x ( pos_off     + 2 );
+    rt = x ( pos_off     + 3 );
     lx = x ( lm_off + 1 );
     ly = x ( lm_off + 2 );
-    H_sub = meas_landmark_jacobian( rx , ry , lx , ly );
+    H_sub = meas_landmark_jacobian( rx , ry , rt, lx , ly );
 
 
-    dtheta_drx  = H_sub ( 1 , 1 ); 
-    dtheta_dlx  = H_sub ( 1 , 2 ); 
-    dtheta_dry  = H_sub ( 1 , 3 ); 
-    dtheta_dly  = H_sub ( 1 , 4 ); 
-    dd_drx      = H_sub ( 2 , 1 ); 
-    dd_dlx      = H_sub ( 2 , 2 ); 
-    dd_dry      = H_sub ( 2 , 3 ); 
-    dd_dly      = H_sub ( 2 , 4 ); 
+    dDX_drx = H ( 1 , 1 );
+    dDX_dry = H ( 1 , 2 );
+    dDX_drt = H ( 1 , 3 );
+    dDX_dlx = H ( 1 , 4 );
+    dDX_dly = H ( 1 , 5 );
+    dDY_drx = H ( 2 , 1 );
+    dDY_dry = H ( 2 , 2 );
+    dDY_drt = H ( 2 , 3 );
+    dDY_dlx = H ( 2 , 4 );
+    dDY_dly = H ( 2 , 5 ); 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Predict measurement based on x %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    h = meas_landmark( rx , ry , lx , ly );
-    theta_p = h ( 1 );
-    d_p     = h ( 2 );
+    h = meas_landmark( rx , ry , rt, lx , ly );
+    DX_p = h ( 1 );
+    DY_p = h ( 2 );
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% Add landmark jacobian info to As %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    As = As + sparse (  obs_offset + 1 , pos_off + 1 , sigma_l * dtheta_drx, M,N );
-    As = As + sparse (  obs_offset + 1 , pos_off + 2 , sigma_l * dtheta_dry, M,N );
-    As = As + sparse (  obs_offset + 1 , lm_off  + 1 , sigma_l * dtheta_dlx, M,N );
-    As = As + sparse (  obs_offset + 1 , lm_off  + 2 , sigma_l * dtheta_dly, M,N );
+    
+    As = As + sparse (  obs_offset + 1 , pos_off + 1 , sigma_l * dDX_drx, M,N );
+    As = As + sparse (  obs_offset + 1 , pos_off + 2 , sigma_l * dDX_dry, M,N );
+    As = As + sparse (  obs_offset + 1 , pos_off + 3 , sigma_l * dDX_drt, M,N );
+    As = As + sparse (  obs_offset + 1 , lm_off  + 1 , sigma_l * dDX_dlx, M,N );
+    As = As + sparse (  obs_offset + 1 , lm_off  + 2 , sigma_l * dDX_dly, M,N );
 
-    As = As + sparse (  obs_offset + 2 , pos_off + 1 , sigma_l * dd_drx , M,N );
-    As = As + sparse (  obs_offset + 2 , pos_off + 2 , sigma_l * dd_dry , M,N );
-    As = As + sparse (  obs_offset + 2 , lm_off  + 1 , sigma_l * dd_dlx , M,N );
-    As = As + sparse (  obs_offset + 2 , lm_off  + 2 , sigma_l * dd_dly , M,N );
+    As = As + sparse (  obs_offset + 2 , pos_off + 1 , sigma_l * dDY_drx , M,N );
+    As = As + sparse (  obs_offset + 2 , pos_off + 2 , sigma_l * dDY_dry , M,N );
+    As = As + sparse (  obs_offset + 2 , pos_off + 3 , sigma_l * dDY_drt , M,N );
+    As = As + sparse (  obs_offset + 2 , lm_off  + 1 , sigma_l * dDY_dlx , M,N );
+    As = As + sparse (  obs_offset + 2 , lm_off  + 2 , sigma_l * dDY_dly , M,N );
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Formulate b ( error vector ) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    b ( obs_offset + 1 ) = sigma_l * ( wrapToPi ( lth - theta_p ) );
-    b ( obs_offset + 2 ) = sigma_l * ( ld  - d_p     );
+    b ( obs_offset + 1 ) = sigma_l * ( DX - DX_p );
+    b ( obs_offset + 2 ) = sigma_l * ( DY - DY_p );
   end
 
 end

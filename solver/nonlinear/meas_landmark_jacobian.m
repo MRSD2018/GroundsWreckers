@@ -11,7 +11,7 @@
 % Returns:
 %     H     - Jacobian of the measurement fuction
 %
-function H = meas_landmark_jacobian(rx, ry, lx, ly)
+function H = meas_landmark_jacobian(rx, ry, rt, lx, ly)
 
   dDX_drx = -cos(rt);
   dDY_drx = -sin(rt);
