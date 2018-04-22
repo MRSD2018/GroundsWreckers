@@ -12,16 +12,13 @@
 %     h     - odometry measurement prediction = [ theta 
 %                                                   d  ]
 %
-function h = meas_landmark(rx, ry, lx, ly)
+function h = meas_landmark(rx, ry, rt, lx, ly)
 
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   h = [ ];
-  theta = atan2 (   ly - ry     ,   lx - rx );
-  d     = sqrt  ( ( lx - rx )^2 + ( ly - ry )^2 );
-  h ( 1 , 1 ) = theta;
-  h ( 2 , 1 ) = d;
+  deltaX = cos(rt)*(lx-rx) + sin(rt)*(ly-ry);
+  deltaY = sin(rt)*(lx-rx) - cos(rt)*(ly-ry);
+  h ( 1 , 1 ) = deltaX;
+  h ( 2 , 1 ) = deltaY;
 end
   
   

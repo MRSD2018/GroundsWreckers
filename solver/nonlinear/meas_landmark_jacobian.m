@@ -13,27 +13,24 @@
 %
 function H = meas_landmark_jacobian(rx, ry, lx, ly)
 
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  x =  lx - rx;
-  y =  ly - ry;
-  dtheta_drx =   ( y ) /       ( x^2 + y^2 );
-  dtheta_dlx = - ( y ) /       ( x^2 + y^2 );
-  dtheta_dry = - ( x ) /       ( x^2 + y^2 );
-  dtheta_dly =   ( x ) /       ( x^2 + y^2 );
-  dd_drx     = -   x   / sqrt  ( x^2 + y^2 );
-  dd_dlx     =     x   / sqrt  ( x^2 + y^2 );
-  dd_dry     = -   y   / sqrt  ( x^2 + y^2 );
-  dd_dly     =     y   / sqrt  ( x^2 + y^2 );
+  dDX_drx = -cos(rt);
+  dDY_drx = -sin(rt);
+  dDX_dry = sin(rt);
+  dDY_dry = -cos(rt);
+  dDX_drt = -(lx-rx)*sin(rt) + (ly-ry)*cos(rt);
+  dDY_drt = (lx-rx)*cos(rt) + (ly-ry)*sin(rt);
+  dDX_dlx = cos(rt);
+  dDY_dly = sin(rt);
 
-  H ( 1 , 1 ) =  dtheta_drx;
-  H ( 1 , 2 ) =  dtheta_dlx;
-  H ( 1 , 3 ) =  dtheta_dry;
-  H ( 1 , 4 ) =  dtheta_dly;
-  H ( 2 , 1 ) =  dd_drx    ;
-  H ( 2 , 2 ) =  dd_dlx    ;
-  H ( 2 , 3 ) =  dd_dry    ;
-  H ( 2 , 4 ) =  dd_dly    ;
+  H ( 1 , 1 ) =  dDX_drx;
+  H ( 1 , 2 ) =  dDX_dry;
+  H ( 1 , 3 ) =  dDX_drt;
+  H ( 1 , 4 ) =  dDX_dlx;
+  H ( 1 , 5 ) =  dDX_dly;
+  H ( 2 , 1 ) =  dDY_drx;
+  H ( 2 , 2 ) =  dDY_dry;
+  H ( 2 , 3 ) =  dDY_drt;
+  H ( 2 , 4 ) =  dDY_dlx;
+  H ( 2 , 5 ) =  dDY_dly;
 
 end

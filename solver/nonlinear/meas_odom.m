@@ -12,9 +12,9 @@
 % Returns:
 %     h     - odometry measurement prediction 
 %
-function h = meas_odom(rx1, ry1, rx2, ry2)
+function h = meas_odom(rx1, ry1, rt1, rx2, ry2, rt2)
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  h = [ rx2 - rx1 ; ry2 - ry1 ];
+  h = [ rx2 - rx1 ; ry2 - ry1;  rt2 - rt1];
