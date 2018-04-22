@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
   ros::NodeHandle n;
 
-  sub = n.subscribe("", 1000, odom_callback);
+  sub = n.subscribe("/grudsby/odometry", 1000, odom_callback);
   pub = n.advertise<std_msgs::String>("state_counter", 1000);
 
   state = 0;
