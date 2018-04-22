@@ -1,4 +1,8 @@
 <launch>
-<!-- we're gonna parse the world -->
-<include file="./example.launch"/>
+  <!-- we're gonna parse the world -->
+  <include file="./example.launch"/>
+  <node name="odom_processing" pkg="odom_processing" type="odom_processing" />
+  <node name="landmark_processing" pkg="landmark_processing" type="landmark_processing" />
+  <!-- <node pkg="rosbag" type="play" name="player" args="/home/joe/mrsd/grudslam/GroundsWreckers/src/launch/AprilTag_Moving.bag" /> -->
+  <!-- <node name="gucci_gang" pkg="gucci_gang" type="gucci_gang" /> -->
 </launch>
