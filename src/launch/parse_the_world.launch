@@ -1,3 +1,4 @@
 <launch>
 <!-- we're gonna parse the world -->
+<include file="./example.launch"/>
 </launch>

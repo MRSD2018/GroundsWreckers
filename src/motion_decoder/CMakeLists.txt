@@ -16,7 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   tf
 )
-
+find_package(OpenCV REQUIRED)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -75,6 +75,7 @@ add_dependencies(motion_decoder apriltags_ros_generate_messages_cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(motion_decoder
   ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )
 
 

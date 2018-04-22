@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(Eigen REQUIRED)
+find_package(OpenCV REQUIRED)
 
 add_message_files(
   FILES
@@ -68,6 +69,7 @@ add_executable(apriltag_detector_node src/apriltag_detector_node.cpp)
 target_link_libraries(apriltag_detector_node
   ${catkin_LIBRARIES}
   apriltag_detector
+  ${OpenCV_LIBRARIES}
 )
 
 #############
