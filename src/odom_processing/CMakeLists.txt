@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   nav_msgs
 )
+find_package(OpenCV REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -77,5 +78,6 @@ add_dependencies(odom_processing ${catkin_EXPORTED_TARGETS})
 ## Specify libraries to link a library or executable target against
 target_link_libraries(odom_processing
   ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )
 
