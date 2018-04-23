@@ -84,36 +84,40 @@ for i = 1:n_poses
     for j = 1:n_landmarks
         if ~isnan(all_landmarks(j, 1))
             obs(obs(:,2) == j, 2) = num;
-            landmark_vec(l_dim*(num-1)+1:l_dim*num) = all_landmarks(j,:);
+            landmark_vec(l_dim*(num-1)+1:l_dim*num,:) = all_landmarks(j,:);
             landmark_map(num) = j;
             num = num + 1;
         end
     end
     
-    x0 = [poses; landmark_vec];
-   
-    %%%% Update the solution using Gauss-Newton algorithm %%%%
 
-    if i > 1
-        x = gauss_newton(x0, odom(1:i-1,:), obs, sigma_odom, sigma_landmark);
-    else
-        x = x0;
-    end
+    if size ( obs , 1 ) > 0 && size ( landmark_vec , 1 ) > 0
+      z = 1;
+      x0 = [poses; landmark_vec];
+     
+      %%%% Update the solution using Gauss-Newton algorithm %%%%
 
-    [traj, landmarks] = format_solution(x, i, n_seen, p_dim, m_dim);
-    %update_plot('Nonlinear SLAM', traj, landmarks, odom(1:i-1,:));
-    pause(0.01);
-    
-    %%%% Update poses and global landmarks %%%%
-    for j = 1:i
-        poses = x(1:i*p_dim);
-    end
-    
-    updated_landmarks = x(length(poses)+1:end);
-    for j = 1:n_seen
-        landmark_idx = landmark_map(j);
-        all_landmarks(landmark_idx, :) = updated_landmarks(l_dim*(j-1)+1:l_dim*j);
-    end
+      if i > 1
+          x = gauss_newton(x0, odom(1:i-1,:), obs, sigma_odom, sigma_landmark);
+      else
+          x = x0;
+      end
+
+      [traj, landmarks] = format_solution(x, i, n_seen, p_dim, m_dim);
+      %update_plot('Nonlinear SLAM', traj, landmarks, odom(1:i-1,:));
+      pause(0.01);
+      
+      %%%% Update poses and global landmarks %%%%
+      for j = 1:i
+          poses = x(1:i*p_dim);
+      end
+      
+      updated_landmarks = x(length(poses)+1:end);
+      for j = 1:n_seen
+          landmark_idx = landmark_map(j);
+          all_landmarks(landmark_idx, :) = updated_landmarks(l_dim*(j-1)+1:l_dim*j);
+      end
+  end
 end
 
 

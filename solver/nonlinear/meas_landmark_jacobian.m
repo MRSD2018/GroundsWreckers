@@ -20,7 +20,10 @@ function H = meas_landmark_jacobian(rx, ry, rt, lx, ly)
   dDX_drt = -(lx-rx)*sin(rt) + (ly-ry)*cos(rt);
   dDY_drt = (lx-rx)*cos(rt) + (ly-ry)*sin(rt);
   dDX_dlx = cos(rt);
-  dDY_dly = sin(rt);
+  dDX_dly = sin(rt);
+  dDY_dlx = sin(rt);
+  dDY_dly = -cos(rt);
+
 
   H ( 1 , 1 ) =  dDX_drx;
   H ( 1 , 2 ) =  dDX_dry;

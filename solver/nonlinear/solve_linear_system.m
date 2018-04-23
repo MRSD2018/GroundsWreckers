@@ -28,12 +28,15 @@ function x = solve_linear_system(A, b)
   %             version of the Cholesky decomposition
   %     R     - R factor from the Cholesky decomposition
   %
-  AtA = A' * A;  %one leg short of an at-at
+  %AtA = A' * A;  %one leg short of an at-at
   %p = colamd ( AtA ); 
-  p = symrcm(AtA);
-  R = chol        ( AtA ( p , p ));
-  y = forward_sub ( R' , A ( : , p )'  * b );
-  x = back_sub    ( R  , y      );
-  x ( p ) = x;
-
+  %p = symrcm(AtA);
+  %R = chol        ( AtA ( p , p ));
+  %y = forward_sub ( R' , A ( : , p )'  * b );
+  %x = back_sub    ( R  , y      );
+  %x ( p ) = x;
+  fprintf ( 'inside' )
+  size ( A )
+  size ( b )
+  x = ( ( ( A' * A ) ^ -1 ) * A' )* b
 end

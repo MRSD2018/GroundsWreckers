@@ -34,6 +34,10 @@ x = x0;
 iter = 1;
 
 while (true)
+    if all ( odom == 0 )
+      disp ( odom ) 
+      break;
+    end
     [A, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l);
     delta = solve_linear_system(A, b);
     x_new = x + delta;
