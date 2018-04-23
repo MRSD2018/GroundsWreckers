@@ -29,11 +29,14 @@ observations = csvread ('../../csv/landmarks.csv');
 %gt_traj = odom;
 %gt_landmarks = observations ( ;
 %% Extract useful info
-n_poses = size(gt_traj, 1);
+n_poses = size(odom, 1);
 %n_landmarks = size(gt_landmarks, 1);
 n_landmarks = 210;
 n_odom = size(odom, 1);
 n_obs  = size(observations, 1);
+
+sigma_odom = [ 1 0 ; 0 1 ];
+sigma_landmark = [ 1 0 ; 0 1 ];
 
 %p_dim = size(gt_traj, 2);
 p_dim = 3;
@@ -60,7 +63,7 @@ for i = 1:n_poses
     lpe = (i-1)*p_dim;
     if (i > 1)
         % Update pose with odometry
-        poses(tps:tpe) = poses(lps:lpe) + meas_odom_z ( odom(i-1, :) , poses (lpe) ); % was transpose...
+        poses(tps:tpe) = poses(lps:lpe) + meas_odom_z ( odom(i-1, 1) , odom(i-1, 2) , poses (lpe) ); % was transpose...
     end
     
     %%%% Add new landmarks %%%%
@@ -97,8 +100,8 @@ for i = 1:n_poses
         x = x0;
     end
 
-    [traj, landmarks] = format_solution(x, i, n_seen, o_dim, m_dim);
-    update_plot('Nonlinear SLAM', traj, landmarks, odom(1:i-1,:), gt_traj(1:i,:), gt_landmarks);
+    [traj, landmarks] = format_solution(x, i, n_seen, p_dim, m_dim);
+    %update_plot('Nonlinear SLAM', traj, landmarks, odom(1:i-1,:));
     pause(0.01);
     
     %%%% Update poses and global landmarks %%%%
@@ -114,5 +117,5 @@ for i = 1:n_poses
 end
 
 
-evaluate_method('Nonlinear SLAM', traj, landmarks, odom, gt_traj, gt_landmarks, true);
+%evaluate_method('Nonlinear SLAM', traj, landmarks, odom, gt_traj, gt_landmarks, true);
 
