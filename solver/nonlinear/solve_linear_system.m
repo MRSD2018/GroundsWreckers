@@ -36,7 +36,5 @@ function x = solve_linear_system(A, b)
   %x = back_sub    ( R  , y      );
   %x ( p ) = x;
   fprintf ( 'inside' )
-  size ( A )
-  size ( b )
   x = ( ( ( A' * A ) ^ -1 ) * A' )* b
 end

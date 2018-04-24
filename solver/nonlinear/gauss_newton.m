@@ -53,9 +53,6 @@ while (true)
         fprintf('Error went up! Skipping this step...\n');
         break;
     end
-    if iter >= 47
-      fprintf ( ' here i am ')
-    end
     
     %% Check end conditions
     if ( norm(delta) < epsilon1 )

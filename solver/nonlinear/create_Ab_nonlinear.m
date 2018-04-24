@@ -41,7 +41,7 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
 
   % A matrix is MxN, b is Mx1
   N = p_dim *   n_poses + l_dim * n_landmarks;
-  M = o_dim * ( n_odom  + 1 ) + m_dim * n_obs; % +1 for prior on the first pose
+  M = p_dim * ( n_odom  + 1 ) + m_dim * n_obs; % +1 for prior on the first pose
 
   %% Initialize matrices
   A = zeros(M, N);
