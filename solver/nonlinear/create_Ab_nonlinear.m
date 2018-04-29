@@ -37,6 +37,7 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
   p_dim = 3;                                  % pose dimension
   l_dim = 2;                                  % landmark dimension
   o_dim = size(odom, 2);                      % odometry dimension
+  o_dim = p_dim;
   m_dim = size(obs(1, 3:end), 2);             % landmark measurement dimension
 
   % A matrix is MxN, b is Mx1
