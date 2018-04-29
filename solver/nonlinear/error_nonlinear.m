@@ -37,6 +37,7 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark)
   p_dim = 3;                                  % pose dimension
   l_dim = 2;                                  % landmark dimension
   o_dim = size(odom, 2);                      % odometry dimension
+  o_dim = p_dim;
   m_dim = size(obs(1, 3:end), 2);    % landmark measurement dimension
 
   % A matrix is MxN, b is Nx1
@@ -61,15 +62,15 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Predict measurement %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ixu = 2*u;
-    rx1 = x ( ixu - 1 );
-    ry1 = x ( ixu + 0 );
-    rt1 = x ( ixu + 1 );
-    rx2 = x ( ixu + 2 );
-    ry2 = x ( ixu + 3 );
-    rt2 = x ( ixu + 4 );
+    ixu = p_dim*u;
+    rx1 = x ( ixu - 2 );
+    ry1 = x ( ixu - 1 );
+    rt1 = x ( ixu + 0 );
+    rx2 = x ( ixu + 1 );
+    ry2 = x ( ixu + 2 );
+    rt2 = x ( ixu + 3 );
     
-    h   = meas_odom(rx1, ry1, rx2, ry2);
+    h   = meas_odom(rx1, ry1, rt1 , rx2, ry2, rt2);
     dxp = h ( 1 );
     dyp = h ( 2 );
     dtp = h ( 3 );
