@@ -35,8 +35,9 @@ n_landmarks = 210;
 n_odom = size(odom, 1);
 n_obs  = size(observations, 1);
 
-sigma_odom = [ 1 0 ; 0 1 ];
-sigma_landmark = [ 1 0 ; 0 1 ];
+sigma_odom = [ 0.000025 0 ; 0 0.000025 ];
+%sigma_landmark = [ 0.025 0 ; 0 0.025 ];
+sigma_landmark = [ 100 0 ; 0 100 ];
 
 %p_dim = size(gt_traj, 2);
 p_dim = 3;
@@ -55,7 +56,6 @@ M = o_dim*(n_odom+1) + m_dim*n_obs;     % +1 for prior on the first pose
 poses = [0; 0; 0];
 all_landmarks = nan(n_landmarks, l_dim);
 n_seen = 0;
-
 for i = 1:n_poses
     tps = (i-1)*p_dim+1;
     tpe = i*p_dim;
@@ -76,7 +76,6 @@ for i = 1:n_poses
             n_seen = n_seen + 1;
         end
     end
-    
     %%%% Re-index landmarks & combine into vector %%%%
     num = 1;
     landmark_map = nan(n_seen, 1);
@@ -91,8 +90,7 @@ for i = 1:n_poses
     end
     
 
-    if size ( obs , 1 ) > 0 && size ( landmark_vec , 1 ) > 0
-      z = 1;
+    %if size ( obs , 1 ) > 0 && size ( landmark_vec , 1 ) > 0
       x0 = [poses; landmark_vec];
      
       %%%% Update the solution using Gauss-Newton algorithm %%%%
@@ -104,7 +102,7 @@ for i = 1:n_poses
       end
 
       [traj, landmarks] = format_solution(x, i, n_seen, p_dim, m_dim);
-      %update_plot('Nonlinear SLAM', traj, landmarks, odom(1:i-1,:));
+      update_plot('Nonlinear SLAM', traj, landmarks, odom(1:i-1,:));
       pause(0.01);
       
       %%%% Update poses and global landmarks %%%%
@@ -117,7 +115,7 @@ for i = 1:n_poses
           landmark_idx = landmark_map(j);
           all_landmarks(landmark_idx, :) = updated_landmarks(l_dim*(j-1)+1:l_dim*j);
       end
-  end
+    %end
 end
 
 
