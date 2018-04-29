@@ -50,7 +50,7 @@ void odom_callback(const nav_msgs::Odometry msg)
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "odom_processing");
+  ros::init(argc, argv, "odom_filt_processing");
 
   ros::NodeHandle n;
 
