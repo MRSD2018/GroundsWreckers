@@ -56,6 +56,10 @@ M = o_dim*(n_odom+1) + m_dim*n_obs;     % +1 for prior on the first pose
 poses = [0; 0; 0];
 all_landmarks = nan(n_landmarks, l_dim);
 n_seen = 0;
+x=0;
+A = 0;
+b = 0;
+landmark_map = 0;
 for i = 1:n_poses
     tps = (i-1)*p_dim+1;
     tpe = i*p_dim;
@@ -96,14 +100,14 @@ for i = 1:n_poses
       %%%% Update the solution using Gauss-Newton algorithm %%%%
 
       if i > 1
-          x = gauss_newton(x0, odom(1:i-1,:), obs, sigma_odom, sigma_landmark);
+          [ x, A , b ]  = gauss_newton(x0, odom(1:i-1,:), obs, sigma_odom, sigma_landmark);
       else
           x = x0;
       end
 
       [traj, landmarks] = format_solution(x, i, n_seen, p_dim, m_dim);
       update_plot('Nonlinear SLAM', traj, landmarks, odom(1:i-1,:));
-      pause(0.01);
+      %pause(0.01);
       
       %%%% Update poses and global landmarks %%%%
       for j = 1:i
@@ -120,4 +124,4 @@ end
 
 
 %evaluate_method('Nonlinear SLAM', traj, landmarks, odom, gt_traj, gt_landmarks, true);
-
+save ('results','landmarks','traj','A','b','x','landmark_map');
