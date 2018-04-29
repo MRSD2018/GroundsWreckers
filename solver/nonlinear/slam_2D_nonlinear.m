@@ -56,11 +56,33 @@ poses = [0; 0; 0];
 all_landmarks = nan(n_landmarks, l_dim);
 n_seen = 0;
 
+state = [ 0 , 0 , 0 ];
+poses = [ ];
+%%things we tried
+%{
+ set state theta to zero each iteration. observed that only x state value accumulates (expected)
+ set state theta to pi/2 each iteration. observed that only y state value accumulates (expected)
+ set state x/y to zero each iteration. ok, vr-vl not vr+vl. one bug down.
+%}
 for i = 1:n_poses
+    z = meas_odom_z ( odom ( i , 1 ) , odom ( i , 2 ) , state ( 3 ) );
+    %[ dx dy dtheta ] = meas_odom_z ( odom ( i , 1 ) , odom ( i , 2 ) , state ( 3 ) );
+    state = state + [ z(1) z(2) z(3) ];
+    %state ( 3 ) = pi/2.0;
+    %state ( 1 ) = 0;
+    %state ( 2 ) = 0;
+    %fprintf( "fuuuuuuuuuckkkkkkk\n");
+    %disp ( odom ( i ,: ) );
+    %disp ( state );
+    %pause ( 0.1 );
+    poses = [ poses ; state ];
+    %disp ( size ( poses ) );
+    continue;
     tps = (i-1)*p_dim+1;
     tpe = i*p_dim;
     lps = (i-2)*p_dim+1;
     lpe = (i-1)*p_dim;
+    poses(tps:tpe) = poses(lps:lpe) + meas_odom_z ( odom(i-1, 1) , odom(i-1, 2) , poses (lpe) ); % was transpose...
     if (i > 1)
         % Update pose with odometry
         poses(tps:tpe) = poses(lps:lpe) + meas_odom_z ( odom(i-1, 1) , odom(i-1, 2) , poses (lpe) ); % was transpose...
@@ -104,7 +126,7 @@ for i = 1:n_poses
       end
 
       [traj, landmarks] = format_solution(x, i, n_seen, p_dim, m_dim);
-      %update_plot('Nonlinear SLAM', traj, landmarks, odom(1:i-1,:));
+      update_plot('Nonlinear SLAM', traj, landmarks, odom(1:i-1,:));
       pause(0.01);
       
       %%%% Update poses and global landmarks %%%%
@@ -119,7 +141,7 @@ for i = 1:n_poses
       end
   end
 end
-
+plot ( poses ( : , 1 ) , poses ( : , 2 ) )
 
 %evaluate_method('Nonlinear SLAM', traj, landmarks, odom, gt_traj, gt_landmarks, true);
 
