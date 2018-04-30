@@ -83,18 +83,31 @@ for r = 1:iterations
     
 end
 
-ransac_transformed = ransac_transform * local_lm(correspondence_idx(:,2),:)';
-ransac_res = sum( diag( pdist2( global_lm(correspondence_idx(:,1),:), ransac_transformed')))
+% ransac_transformed = ransac_transform * local_lm(correspondence_idx(:,2),:)';
+% ransac_res = sum( diag( pdist2( global_lm(correspondence_idx(:,1),:), ransac_transformed')))
 
-figure
-plot(global_lm(correspondence_idx(:,1),1), global_lm(correspondence_idx(:,1),2), 'o');
-hold on
-% plot(local_lm(correspondence_idx(:,2),1), local_lm(correspondence_idx(:,2),2), 'x');
+% figure
+% plot(global_lm(correspondence_idx(:,1),1), global_lm(correspondence_idx(:,1),2), 'o');
+% hold on
+% % plot(local_lm(correspondence_idx(:,2),1), local_lm(correspondence_idx(:,2),2), 'x');
+% 
+% plot(ransac_transformed(1,:), ransac_transformed(2,:), '*');
+% hold off
 
-plot(ransac_transformed(1,:), ransac_transformed(2,:), '*');
-hold off
-
-
-
-
-
+transformed_lm = ransac_transform * local_lm';
+transformed_traj = zeros(size(local_traj));
+% temp = local_traj(:, 1:2);
+% temp(:, 3) = 1;
+% transformed_traj = ransac_transform * temp';
+for i = 1:size(local_traj, 1)
+    x = local_traj(i, 1);
+    y = local_traj(i, 2);
+    t = local_traj(i, 3);
+    
+    local_T = [ cos(t) -sin(t) x; ...
+                sin(t)  cos(t) y; ...
+                0 0 1 ];
+    global_T = ransac_transform * local_T;
+    
+    transformed_traj(i,:) = [global_T(7) global_T(8) acos(global_T(1))];
+end
