@@ -10,26 +10,31 @@ ros::Subscriber sub;
 ros::Publisher pub;
 std_msgs::String state_string;
 unsigned int state;
+unsigned int throwaway_counter=0;
 
 void odom_callback(const nav_msgs::Odometry msg)
 {
   //TODO: this entire thing
-  ++state;
-  std::stringstream ss;
-  ss << state;
-  state_string.data = ss.str();
-  pub.publish(state_string);
+  throwaway_counter++;
+  if ( throwaway_counter % 5 == 0) {
+    throwaway_counter = 0;
+    ++state;
+    std::stringstream ss;
+    ss << state;
+    state_string.data = ss.str();
+    pub.publish(state_string);
 
-  double vx = msg.twist.twist.linear.x;
-  double l = 0.508;
-  double omega = msg.twist.twist.angular.z;
+    double vx = msg.twist.twist.linear.x;
+    double l = 0.508;
+    double omega = msg.twist.twist.angular.z;
 
-  double Vl = vx - ( omega * (l/2) );
-  double Vr = vx + ( omega * (l/2) );
+    double Vl = vx - ( omega * (l/2) );
+    double Vr = vx + ( omega * (l/2) );
 
-  std::ofstream out("odom.csv", std::ios::app);
-  out << state << "," << Vl << "," << Vr << std::endl;
-  out.close();
+    std::ofstream out("odom.csv", std::ios::app);
+    out << state << "," << Vl << "," << Vr << std::endl;
+    out.close();
+  }
 }
 
 int main(int argc, char** argv)
