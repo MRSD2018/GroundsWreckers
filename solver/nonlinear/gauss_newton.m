@@ -23,7 +23,7 @@
 % Returns:
 %     x       - new state estimate after Gauss-Newton update
 %
-function [ x , A , b ]  = gauss_newton(x0, odom, obs, sigma_o, sigma_l)
+function [ x , A , b ]  = gauss_newton(x0, odom, obs, sigma_o, sigma_l ,r2_prior )
 
 % GN constants
 max_iterations = 10;
@@ -40,7 +40,7 @@ while (true)
       disp ( odom ) 
       break;
     end
-    [A, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l);
+    [A, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l, r2_prior);
     delta = solve_linear_system(A, b);
     x_new = x + delta;
     err_old = error_nonlinear(x, odom, obs, sigma_o, sigma_l);

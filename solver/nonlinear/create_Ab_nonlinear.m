@@ -25,7 +25,7 @@
 %     A       - MxN matrix
 %     b       - Mx1 vector
 %
-function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
+function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l, r2_prior )
   %% Extract useful constants which you may wish to use
   n_poses =     size ( odom, 1 ) + 1; % +1 for prior on the first pose
   n_landmarks = max  ( obs( : , 2 ) );
@@ -48,6 +48,7 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
   A = zeros(M, N);
   b = zeros(M, 1);
 
+  
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -189,6 +190,25 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
     b ( obs_offset + 2 ) = sigma_l * ( DY - DY_p );
   end
 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Clear relative pose between dudes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  if n_poses > r2_prior.pose_id
+    r = p_dim * r2_prior.pose_id;
+    c = r;
+    As ( r + 1 , : ) = 0;
+    As ( r + 2 , : ) = 0;
+    As ( r + 3 , : ) = 0;
+    As ( r + 1 , 1 ) = -1;
+    As ( r + 2 , 2 ) = -1;
+    As ( r + 3 , 3 ) = -1;
+    As ( r + 1 , c + 1 ) = 1;
+    As ( r + 2 , c + 2 ) = 1;
+    As ( r + 3 , c + 3 ) = 1;
+    b ( r + 1 ) = r2_prior.x;
+    b ( r + 2 ) = r2_prior.y;
+    b ( r + 3 ) = r2_prior.theta;
+  end
 end
 
 
