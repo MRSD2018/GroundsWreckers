@@ -9,7 +9,7 @@ iterations = 50000;
 
 %%
 %Load shit
-load('../results/outer_loop4/results.mat', ...
+load('../Results/firstfloor_loop/results.mat', ...
         'landmark_map', ...
         'landmarks',    ...
         'traj',         ...
@@ -20,7 +20,7 @@ global_lm(:,3) = 1;
 global_traj = traj;
 global_x = x;
 
-load('../results/extended_loop1/results.mat', ...
+load('../Results/firstfloor_hallway/results.mat', ...
         'landmark_map', ...
         'landmarks',    ...
         'traj',         ...
@@ -78,7 +78,7 @@ for r = 1:iterations
     
 end
 
-transformed_lm = ransac_transform * local_lm';
+transformed_lm = (ransac_transform * local_lm')';
 transformed_traj = zeros(size(local_traj));
 
 for i = 1:size(local_traj, 1)
@@ -93,3 +93,10 @@ for i = 1:size(local_traj, 1)
     
     transformed_traj(i,:) = [global_T(7) global_T(8) acos(global_T(1))];
 end
+
+plot(global_traj(:,1), global_traj(:,2), 'r')
+hold on
+plot(global_lm(:,1), global_lm(:,2), 'ro')
+plot(transformed_traj(:,1), transformed_traj(:,2), 'b')
+plot(transformed_lm(:,1), transformed_lm(:,2), 'b*')
+legend('Global Trajectory', 'Global Landmarks', 'Transformed Trajector', 'Transformed Landmarks');
