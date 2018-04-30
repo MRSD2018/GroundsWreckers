@@ -23,7 +23,7 @@
 % Returns:
 %     x       - new state estimate after Gauss-Newton update
 %
-function x = gauss_newton(x0, odom, obs, sigma_o, sigma_l)
+function [ x , A , b ]  = gauss_newton(x0, odom, obs, sigma_o, sigma_l)
 
 % GN constants
 max_iterations = 10;
@@ -35,6 +35,8 @@ iter = 1;
 
 while (true)
     if all ( odom == 0 )
+      A = 0;
+      b = 0;
       disp ( odom ) 
       break;
     end
