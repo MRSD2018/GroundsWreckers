@@ -54,11 +54,6 @@ for r = 1:iterations
     dv1 = global_coords ( 2 , : ) - global_coords ( 1 , : );
     dv2 = local_coords ( 2 , : ) - local_coords ( 1 , : );
 
-%     s = cross ( dv1 , dv2 );
-%     s = -sign ( s ( 3 ) );
-% 
-%     thetaout = s * acos ( ( dv1 * dv2' ) / ( norm ( dv1 ) * norm ( dv2 ) ) );
-
     thetaout = wrapToPi( atan2( dv1(2),dv1(1) ) - atan2( dv2(2), dv2(1) ) ); 
     
     %Find translation between maps
@@ -83,22 +78,9 @@ for r = 1:iterations
     
 end
 
-% ransac_transformed = ransac_transform * local_lm(correspondence_idx(:,2),:)';
-% ransac_res = sum( diag( pdist2( global_lm(correspondence_idx(:,1),:), ransac_transformed')))
-
-% figure
-% plot(global_lm(correspondence_idx(:,1),1), global_lm(correspondence_idx(:,1),2), 'o');
-% hold on
-% % plot(local_lm(correspondence_idx(:,2),1), local_lm(correspondence_idx(:,2),2), 'x');
-% 
-% plot(ransac_transformed(1,:), ransac_transformed(2,:), '*');
-% hold off
-
 transformed_lm = ransac_transform * local_lm';
 transformed_traj = zeros(size(local_traj));
-% temp = local_traj(:, 1:2);
-% temp(:, 3) = 1;
-% transformed_traj = ransac_transform * temp';
+
 for i = 1:size(local_traj, 1)
     x = local_traj(i, 1);
     y = local_traj(i, 2);
