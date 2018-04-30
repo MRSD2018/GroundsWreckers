@@ -193,21 +193,21 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l, r2_prior 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %% Clear relative pose between dudes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  if n_poses > r2_prior.pose_id
-    r = p_dim * r2_prior.pose_id;
+  if n_poses > r2_prior.od_id
+    r = p_dim * r2_prior.od_id;
     c = r;
+    As ( r     , : ) = 0;
     As ( r + 1 , : ) = 0;
     As ( r + 2 , : ) = 0;
-    As ( r + 3 , : ) = 0;
-    As ( r + 1 , 1 ) = -1;
-    As ( r + 2 , 2 ) = -1;
-    As ( r + 3 , 3 ) = -1;
-    As ( r + 1 , c + 1 ) = 1;
-    As ( r + 2 , c + 2 ) = 1;
-    As ( r + 3 , c + 3 ) = 1;
-    b ( r + 1 ) = r2_prior.x;
-    b ( r + 2 ) = r2_prior.y;
-    b ( r + 3 ) = r2_prior.theta;
+    As ( r     , 1 ) = -sigma_o;
+    As ( r + 1 , 2 ) = -sigma_o;
+    As ( r + 2 , 3 ) = -sigma_o;
+    As ( r     , c     ) = sigma_o;
+    As ( r + 1 , c + 1 ) = sigma_o
+    As ( r + 2 , c + 2 ) = sigma_o;
+    b ( r     ) = sigma_o  * r2_prior.x;
+    b ( r + 1 ) =  sigma_o * r2_prior.y;
+    b ( r + 2 ) = sigma_o * r2_prior.theta;
   end
 end
 
