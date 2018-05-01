@@ -136,11 +136,15 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark, r2_prio
     b ( obs_offset + 2 ) = sigma_l * ( DY - DY_p );
   end
   if n_poses > r2_prior.od_id
-    r = p_dim * r2_prior.od_id;
+    r = p_dim * r2_prior.od_id + 1;
     c = r;
-    b ( r  ) = sigma_o  * r2_prior.x;
-    b ( r + 1 ) =  sigma_o * r2_prior.y;
-    b ( r + 2 ) = sigma_o * r2_prior.theta;
+    %b ( r  ) = sigma_o  * r2_prior.x;
+    %b ( r + 1 ) =  sigma_o * r2_prior.y;
+    %b ( r + 2 ) = sigma_o * r2_prior.theta;
+    b ( r  ) = 0;
+    b ( r + 1 ) = 0;
+    b ( r + 2 ) = 0;
+
   end
 
   err = sum ( b.^2 );
