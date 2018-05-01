@@ -22,9 +22,9 @@ function slam_2D_nonlinear()
 %}
 close all; clc; 
 addpath('../util');
-odom        = csvread('../../csv/odom.csv');
+odom        = csvread('../Results/firstfloor_loop/odom.csv');
 odom = odom ( : , 2:3 )
-observations = csvread ('../../csv/landmarks.csv');
+observations = csvread ('../Results/firstfloor_loop/landmarks.csv');
 %load('../../csv/odom.csv');
 %gt_traj = odom;
 %gt_landmarks = observations ( ;
@@ -35,9 +35,10 @@ n_landmarks = 210;
 n_odom = size(odom, 1);
 n_obs  = size(observations, 1);
 
-sigma_odom = [ 0.000025 0 ; 0 0.000025 ];
-%sigma_landmark = [ 0.025 0 ; 0 0.025 ];
+sigma_odom = [ 0.000025 0 0; 0 0.000025 0; 0 0 0.000025];
 sigma_landmark = [ 100 0 ; 0 100 ];
+% sigma_odom = [ .0001 0  0; 0 .0001 0; 0 0 .00001];
+% sigma_landmark = [ 100 0 ; 0 100 ];
 
 %p_dim = size(gt_traj, 2);
 p_dim = 3;
@@ -124,4 +125,4 @@ end
 
 
 %evaluate_method('Nonlinear SLAM', traj, landmarks, odom, gt_traj, gt_landmarks, true);
-save ('results','landmarks','traj','A','b','x','landmark_map');
+save ('../Results/firstfloor_loop/results','landmarks','traj','A','b','x','landmark_map');
