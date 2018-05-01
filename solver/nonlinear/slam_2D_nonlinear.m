@@ -37,8 +37,8 @@ function slam_2D_nonlinear(odom,observations, r2_prior)
   n_odom = size(odom, 1);
   n_obs  = size(observations, 1);
 
-  sigma_odom = [ 0.000025 0 ; 0 0.000025 ];
-  sigma_landmark = [ 0.025 0 ; 0 0.025 ];
+  sigma_odom = [ 0.000025 0 0 ; 0 0.000025 0 ; 0 0 0.000025];
+  sigma_landmark = [ 100 0 ; 0 100 ];
   %sigma_landmark = [ 100 0 ; 0 100 ];
 
   %p_dim = size(gt_traj, 2);
@@ -71,7 +71,7 @@ function slam_2D_nonlinear(odom,observations, r2_prior)
           % Update pose with odometry
           poses(tps:tpe) = poses(lps:lpe) + meas_odom_z ( odom(i-1, 1) , odom(i-1, 2) , poses (lpe) ); % was transpose...
       end
-      if i == r2_prior.od_id + 1
+      if i == r2_prior.pose_id + 1
         poses(tps:tpe) = [ r2_prior.x ; r2_prior.y ; r2_prior.theta ] ;
       end
       
