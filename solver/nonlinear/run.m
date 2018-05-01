@@ -8,7 +8,7 @@ robot2_landmark_data = '../../csv/firstfloor_loop/landmarks.csv';
 
 
 robot1_odom_data =     '../../csv/fuck/odom1.csv';
-robot1_landmark_data = '../../csv/fuck/landmarks2.csv';
+robot1_landmark_data = '../../csv/fuck/landmarks1.csv';
 robot2_odom_data =     '../../csv/fuck/odom2.csv'; % global?
 robot2_landmark_data = '../../csv/fuck/landmarks2.csv';
 %%%%%%%%
