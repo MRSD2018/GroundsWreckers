@@ -53,7 +53,7 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark)
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 
-  sigma_o =  1 / sqrt ( sigma_odom ( 1 ) ); %% hack assuming symetric , diagonal matrix 
+  sigma_o =  1 ./ sqrt ( diag( sigma_odom ) )'; %% hack assuming symetric , diagonal matrix 
   sigma_l = 1  / sqrt ( sigma_landmark ( 1 ) ); %% 
 
   %b ( o_dim + 1 : o_dim * n_odom + o_dim ) = sigma_o * odom ( 1 : o_dim*n_odom );
@@ -88,9 +88,9 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% set b %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    b ( ixu +1 ) = sigma_o * ( odom_z(1) - dxp ) ;
-    b ( ixu +2 ) = sigma_o * ( odom_z(2) - dyp ) ;
-    b ( ixu +3 ) = sigma_o * ( odom_z(3) - dtp);
+    b ( ixu +1 ) = sigma_o(1) * ( odom_z(1) - dxp ) ;
+    b ( ixu +2 ) = sigma_o(1) * ( odom_z(2) - dyp ) ;
+    b ( ixu +3 ) = sigma_o(1) * ( odom_z(3) - dtp);
   end
 
   for o = 0 : n_obs -1

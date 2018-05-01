@@ -68,12 +68,12 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
   io  = 1: ( o_dim*n_odom         );
   iox = 1: ( o_dim*n_odom + o_dim );
 
-  sigma_o =  1 / sqrt ( sigma_o ( 1 ) ); %% hack assuming symetric , diagonal matrix 
+  sigma_o =  1 ./ sqrt ( diag( sigma_o ) )'; %% hack assuming symetric , diagonal matrix 
   sigma_l = 1  / sqrt ( sigma_l ( 1 ) ); %% 
 
 
-  As = sparse (  io + o_dim , io  ,  -sigma_o * ones ( 1 , length ( io  ) ) , M , N ) + ... %rx/ry at t = -1
-       sparse (  iox        , iox ,   sigma_o * ones ( 1 , length ( iox ) ) , M , N ); %     
+  As = sparse (  io + o_dim , io  ,  repmat(-sigma_o, 1, length(io)/3) .* ones ( 1 , length ( io  ) ) , M , N ) + ... %rx/ry at t = -1
+       sparse (  iox        , iox ,  repmat( sigma_o, 1, length(iox)/3) .* ones ( 1 , length ( iox ) ) , M , N ); %     
 
   
   %b ( o_dim + 1 : o_dim * n_odom + o_dim ) = sigma_o * odom ( 1 : o_dim*n_odom );
@@ -110,9 +110,9 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% set b %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    b ( ixu +1 ) = sigma_o * ( odom_z(1) - dxp ) ;
-    b ( ixu +2 ) = sigma_o * ( odom_z(2) - dyp ) ;
-    b ( ixu +3 ) = sigma_o * ( odom_z(3) - dtp);
+    b ( ixu +1 ) = sigma_o(1) * ( odom_z(1) - dxp ) ;
+    b ( ixu +2 ) = sigma_o(2) * ( odom_z(2) - dyp ) ;
+    b ( ixu +3 ) = sigma_o(3) * ( odom_z(3) - dtp);
   end
 
   for o = 0 : n_obs -1
