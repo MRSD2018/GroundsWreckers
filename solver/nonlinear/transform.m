@@ -94,12 +94,16 @@ for i = 1:size(local_traj, 1)
     transformed_traj(i,:) = [global_T(7) global_T(8) acos(global_T(1))];
 end
 
+figure
+h1 = axes;
 plot(global_traj(:,1), global_traj(:,2), 'r')
 hold on
 plot(global_lm(:,1), global_lm(:,2), 'ro')
 plot(transformed_traj(:,1), transformed_traj(:,2), 'b')
 plot(transformed_lm(:,1), transformed_lm(:,2), 'b*')
-legend('Global Trajectory', 'Global Landmarks', 'Transformed Trajector', 'Transformed Landmarks');
+set(h1, 'Xdir', 'reverse');
+set(h1, 'Ydir', 'reverse');
+legend('Global Trajectory', 'Global Landmarks', 'Transformed Trajectory', 'Transformed Landmarks');
 daspect([1 1 1])
 
 save('../Results/firstfloor_ransac/ransac_transform.mat', 'ransac_transform');
