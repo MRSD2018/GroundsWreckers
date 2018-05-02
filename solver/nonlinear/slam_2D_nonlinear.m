@@ -38,8 +38,7 @@ function slam_2D_nonlinear(odom,observations, r2_prior)
   n_obs  = size(observations, 1);
 
   sigma_odom = [ 0.000025 0 ; 0 0.000025 ];
-  sigma_landmark = [ 0.025 0 ; 0 0.025 ];
-  %sigma_landmark = [ 100 0 ; 0 100 ];
+  sigma_landmark = [ 25 0 ; 0 25 ];
 
   %p_dim = size(gt_traj, 2);
   p_dim = 3;
@@ -71,9 +70,9 @@ function slam_2D_nonlinear(odom,observations, r2_prior)
           % Update pose with odometry
           poses(tps:tpe) = poses(lps:lpe) + meas_odom_z ( odom(i-1, 1) , odom(i-1, 2) , poses (lpe) ); % was transpose...
       end
-      if i == r2_prior.od_id + 1
-        poses(tps:tpe) = [ r2_prior.x ; r2_prior.y ; r2_prior.theta ] ;
-      end
+      %if i == r2_prior.od_id + 1
+      %  poses(tps:tpe) = [ r2_prior.x ; r2_prior.y ; r2_prior.theta ] ;
+      %end
       
       %%%% Add new landmarks %%%%
       obs = observations(observations(:,1) <= i, :);
@@ -111,7 +110,7 @@ function slam_2D_nonlinear(odom,observations, r2_prior)
         end
 
         [traj, landmarks] = format_solution(x, i, n_seen, p_dim, m_dim);
-        update_plot('Nonlinear SLAM', traj, landmarks, odom(1:i-1,:));
+        update_plot('Nonlinear SLAM', traj, landmarks, odom(1:i-1,:), r2_prior );
         %pause(0.01);
         
         %%%% Update poses and global landmarks %%%%
