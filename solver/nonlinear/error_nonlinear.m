@@ -25,7 +25,7 @@
 % Returns:
 %     err     - total error of all measurements
 %
-function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark)
+function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark, r2_prior )
   %% Extract useful constants which you may wish to use
   n_poses = size(odom, 1) + 1;                % +1 for prior on the first pose
   n_landmarks = max(obs(:,2));
@@ -135,6 +135,28 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark)
     b ( obs_offset + 1 ) = sigma_l * ( DX - DX_p );
     b ( obs_offset + 2 ) = sigma_l * ( DY - DY_p );
   end
+  if n_poses > r2_prior.od_id
+    r = p_dim * r2_prior.od_id + 1;
+    c = r;
+
+    rx1 = x ( 1 );
+    ry1 = x ( 2 );
+    rt1 = x ( 3 );
+    rx2 = x ( r     );
+    ry2 = x ( r + 1 );
+    rt2 = x ( r + 2 );
+
+    h   = meas_odom(rx1, ry1, rt1, rx2, ry2, rt2);
+    dxp = h ( 1 );
+    dyp = h ( 2 );
+    dtp = h ( 3 );
+
+    b ( r     ) = sigma_o * ( r2_prior.x     - dxp );
+    b ( r + 1 ) = sigma_o * ( r2_prior.y     - dyp );
+    b ( r + 2 ) = sigma_o * ( r2_prior.theta - dtp );
+
+  end
+
   err = sum ( b.^2 );
 
 end

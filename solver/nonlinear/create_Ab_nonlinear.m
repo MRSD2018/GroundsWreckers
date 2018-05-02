@@ -25,7 +25,7 @@
 %     A       - MxN matrix
 %     b       - Mx1 vector
 %
-function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
+function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l, r2_prior )
   %% Extract useful constants which you may wish to use
   n_poses =     size ( odom, 1 ) + 1; % +1 for prior on the first pose
   n_landmarks = max  ( obs( : , 2 ) );
@@ -48,6 +48,7 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
   A = zeros(M, N);
   b = zeros(M, 1);
 
+  
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -189,6 +190,48 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
     b ( obs_offset + 2 ) = sigma_l * ( DY - DY_p );
   end
 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Clear relative pose between dudes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  if n_poses > r2_prior.od_id
+    r = p_dim * r2_prior.od_id + 1; % row entry
+    c = r;                          % column entry
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Clear relevant rows , hack in errors relative to pose 0 %%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    As ( r     , : )     =  0;
+    As ( r + 1 , : )     =  0;
+    As ( r + 2 , : )     =  0;
+    As ( r     , 1 )     = -sigma_o;
+    As ( r + 1 , 2 )     = -sigma_o;
+    As ( r + 2 , 3 )     = -sigma_o;
+    As ( r     , c     ) =  sigma_o;
+    As ( r + 1 , c + 1 ) =  sigma_o;
+    As ( r + 2 , c + 2 ) =  sigma_o;
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Set measurement error vector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    rx1 = x ( 1 );
+    ry1 = x ( 2 );
+    rt1 = x ( 3 );
+    rx2 = x ( r     );
+    ry2 = x ( r + 1 );
+    rt2 = x ( r + 2 );
+
+    h   = meas_odom(rx1, ry1, rt1, rx2, ry2, rt2);
+    dxp = h ( 1 );
+    dyp = h ( 2 );
+    dtp = h ( 3 );
+
+    b ( r     ) = sigma_o * ( r2_prior.x     - dxp );
+    b ( r + 1 ) = sigma_o * ( r2_prior.y     - dyp );
+    b ( r + 2 ) = sigma_o * ( r2_prior.theta - dtp );
+
+  end
 end
+
+
 
 
