@@ -40,6 +40,10 @@ prior = struct
 prior.x = ransac_transform ( 1 , 3 );
 prior.y = ransac_transform ( 2 , 3 );
 prior.theta = acos ( ransac_transform ( 1 , 1 ) ) ;
+prior.x_cov  = 10;
+prior.y_cov  = 10;
+prior.th_cov = 10;
+prior.od_id = size ( odom1 , 1 ) + 1; % pose at which robot_2 starts
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% For test porpoises %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -47,7 +51,6 @@ prior.theta = acos ( ransac_transform ( 1 , 1 ) ) ;
 prior.x = 35
 prior.y = 5
 prior.theta = 0.3475
-prior.od_id = size ( odom1 , 1 ) + 1; % pose at which robot_2 starts
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% HACK For test porpoises %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

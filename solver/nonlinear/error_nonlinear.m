@@ -154,9 +154,9 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark, r2_prio
     dyp = h ( 2 );
     dtp = h ( 3 );
 
-    b ( r     ) = sigma_x  * ( r2_prior.x     - dxp );
-    b ( r + 1 ) = sigma_y  * ( r2_prior.y     - dyp );
-    b ( r + 2 ) = sigma_th * ( r2_prior.theta - dtp );
+    b ( r     ) = r2_prior.x_cov  * ( r2_prior.x     - dxp );
+    b ( r + 1 ) = r2_prior.y_cov  * ( r2_prior.y     - dyp );
+    b ( r + 2 ) = r2_prior.th_cov * ( r2_prior.theta - dtp );
 
   end
 

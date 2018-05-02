@@ -209,12 +209,12 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l, r2_prior 
     As ( r     , : )     =  0;
     As ( r + 1 , : )     =  0;
     As ( r + 2 , : )     =  0;
-    As ( r     , 1 )     = -sigma_x;
-    As ( r + 1 , 2 )     = -sigma_y;
-    As ( r + 2 , 3 )     = -sigma_th;
-    As ( r     , c     ) =  sigma_x;
-    As ( r + 1 , c + 1 ) =  sigma_y;
-    As ( r + 2 , c + 2 ) =  sigma_th;
+    As ( r     , 1 )     = -r2_prior.x_cov;
+    As ( r + 1 , 2 )     = -r2_prior.y_cov;
+    As ( r + 2 , 3 )     = -r2_prior.th_cov;
+    As ( r     , c     ) =  r2_prior.x_cov;
+    As ( r + 1 , c + 1 ) =  r2_prior.y_cov;
+    As ( r + 2 , c + 2 ) =  r2_prior.th_cov;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Set measurement error vector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -231,9 +231,9 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l, r2_prior 
     dyp = h ( 2 );
     dtp = h ( 3 );
 
-    b ( r     ) = sigma_x  * ( r2_prior.x     - dxp );
-    b ( r + 1 ) = sigma_y  * ( r2_prior.y     - dyp );
-    b ( r + 2 ) = sigma_th * ( r2_prior.theta - dtp );
+    b ( r     ) = r2_prior.x_cov  * ( r2_prior.x     - dxp );
+    b ( r + 1 ) = r2_prior.y_cov  * ( r2_prior.y     - dyp );
+    b ( r + 2 ) = r2_prior.th_cov * ( r2_prior.theta - dtp );
 
   end
 end
