@@ -37,7 +37,7 @@ function slam_2D_nonlinear(odom,observations, r2_prior)
   n_odom = size(odom, 1);
   n_obs  = size(observations, 1);
 
-  sigma_odom = [ 0.00025 0 0 ; 0 0.00025 0 ; 0 0 0.000025];
+  sigma_odom = [ 0.000025 0 0 ; 0 0.000025 0 ; 0 0 0.0000025];
   sigma_landmark = [ 25 0 ; 0 25 ];
 
   %p_dim = size(gt_traj, 2);
@@ -110,7 +110,7 @@ function slam_2D_nonlinear(odom,observations, r2_prior)
         end
 
         [traj, landmarks] = format_solution(x, i, n_seen, p_dim, m_dim);
-        update_plot('Nonlinear SLAM', traj, landmarks, odom(1:i-1,:), r2_prior );
+        update_plot('Map Merging', traj, landmarks, odom(1:i-1,:), r2_prior );
         %pause(0.01);
         
         %%%% Update poses and global landmarks %%%%
