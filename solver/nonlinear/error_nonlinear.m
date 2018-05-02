@@ -53,7 +53,10 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark, r2_prio
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 
-  sigma_o =  1 / sqrt ( sigma_odom ( 1 ) ); %% hack assuming symetric , diagonal matrix 
+  sigma_o  =  1 ./ sqrt ( diag ( sigma_odom ) )'; 
+  sigma_x  = sigma_o ( 1 );
+  sigma_y  = sigma_o ( 2 );
+  sigma_th = sigma_o ( 3 );
   sigma_l = 1  / sqrt ( sigma_landmark ( 1 ) ); %% 
 
   %b ( o_dim + 1 : o_dim * n_odom + o_dim ) = sigma_o * odom ( 1 : o_dim*n_odom );
@@ -88,9 +91,9 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark, r2_prio
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% set b %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    b ( ixu +1 ) = sigma_o * ( odom_z(1) - dxp ) ;
-    b ( ixu +2 ) = sigma_o * ( odom_z(2) - dyp ) ;
-    b ( ixu +3 ) = sigma_o * ( odom_z(3) - dtp);
+    b ( ixu +1 ) = sigma_x  * ( odom_z(1) - dxp ) ;
+    b ( ixu +2 ) = sigma_y  * ( odom_z(2) - dyp ) ;
+    b ( ixu +3 ) = sigma_th * ( odom_z(3) - dtp);
   end
 
   for o = 0 : n_obs -1
@@ -151,9 +154,9 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark, r2_prio
     dyp = h ( 2 );
     dtp = h ( 3 );
 
-    b ( r     ) = sigma_o * ( r2_prior.x     - dxp );
-    b ( r + 1 ) = sigma_o * ( r2_prior.y     - dyp );
-    b ( r + 2 ) = sigma_o * ( r2_prior.theta - dtp );
+    b ( r     ) = sigma_x  * ( r2_prior.x     - dxp );
+    b ( r + 1 ) = sigma_y  * ( r2_prior.y     - dyp );
+    b ( r + 2 ) = sigma_th * ( r2_prior.theta - dtp );
 
   end
 

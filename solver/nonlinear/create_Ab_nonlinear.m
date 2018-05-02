@@ -69,12 +69,18 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l, r2_prior 
   io  = 1: ( o_dim*n_odom         );
   iox = 1: ( o_dim*n_odom + o_dim );
 
-  sigma_o =  1 / sqrt ( sigma_o ( 1 ) ); %% hack assuming symetric , diagonal matrix 
-  sigma_l = 1  / sqrt ( sigma_l ( 1 ) ); %% 
+  sigma_o  =  1 ./ sqrt ( diag ( sigma_o ) )'; 
+  sigma_x  = sigma_o ( 1 );
+  sigma_y  = sigma_o ( 2 );
+  sigma_th = sigma_o ( 3 );
+  sigma_l  = 1  / sqrt ( sigma_l ( 1 ) ); %% hack assuming symetric , diagonal matrix 
 
 
-  As = sparse (  io + o_dim , io  ,  -sigma_o * ones ( 1 , length ( io  ) ) , M , N ) + ... %rx/ry at t = -1
-       sparse (  iox        , iox ,   sigma_o * ones ( 1 , length ( iox ) ) , M , N ); %     
+  sigmas_io  = repmat ( - sigma_o , 1 , length ( io  ) / o_dim );
+  sigmas_iox = repmat ( sigma_o , 1 , length ( iox ) / o_dim );
+  As = sparse (  io + o_dim , io  ,  sigmas_io  , M , N ) + ... %rx/ry at t = -1
+       sparse (  iox        , iox ,  sigmas_iox , M , N ); %     
+
 
   
   %b ( o_dim + 1 : o_dim * n_odom + o_dim ) = sigma_o * odom ( 1 : o_dim*n_odom );
@@ -111,9 +117,9 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l, r2_prior 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% set b %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    b ( ixu +1 ) = sigma_o * ( odom_z(1) - dxp ) ;
-    b ( ixu +2 ) = sigma_o * ( odom_z(2) - dyp ) ;
-    b ( ixu +3 ) = sigma_o * ( odom_z(3) - dtp);
+    b ( ixu +1 ) = sigma_x  * ( odom_z(1) - dxp ) ;
+    b ( ixu +2 ) = sigma_y  * ( odom_z(2) - dyp ) ;
+    b ( ixu +3 ) = sigma_th * ( odom_z(3) - dtp );
   end
 
   for o = 0 : n_obs -1
@@ -203,12 +209,12 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l, r2_prior 
     As ( r     , : )     =  0;
     As ( r + 1 , : )     =  0;
     As ( r + 2 , : )     =  0;
-    As ( r     , 1 )     = -sigma_o;
-    As ( r + 1 , 2 )     = -sigma_o;
-    As ( r + 2 , 3 )     = -sigma_o;
-    As ( r     , c     ) =  sigma_o;
-    As ( r + 1 , c + 1 ) =  sigma_o;
-    As ( r + 2 , c + 2 ) =  sigma_o;
+    As ( r     , 1 )     = -sigma_x;
+    As ( r + 1 , 2 )     = -sigma_y;
+    As ( r + 2 , 3 )     = -sigma_th;
+    As ( r     , c     ) =  sigma_x;
+    As ( r + 1 , c + 1 ) =  sigma_y;
+    As ( r + 2 , c + 2 ) =  sigma_th;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Set measurement error vector %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -225,9 +231,9 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l, r2_prior 
     dyp = h ( 2 );
     dtp = h ( 3 );
 
-    b ( r     ) = sigma_o * ( r2_prior.x     - dxp );
-    b ( r + 1 ) = sigma_o * ( r2_prior.y     - dyp );
-    b ( r + 2 ) = sigma_o * ( r2_prior.theta - dtp );
+    b ( r     ) = sigma_x  * ( r2_prior.x     - dxp );
+    b ( r + 1 ) = sigma_y  * ( r2_prior.y     - dyp );
+    b ( r + 2 ) = sigma_th * ( r2_prior.theta - dtp );
 
   end
 end
