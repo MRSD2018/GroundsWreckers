@@ -37,7 +37,7 @@ function slam_2D_nonlinear(odom,observations, r2_prior)
   n_odom = size(odom, 1);
   n_obs  = size(observations, 1);
 
-  sigma_odom = [ 0.000025 0 ; 0 0.000025 ];
+  sigma_odom = [ 0.00025 0 0 ; 0 0.00025 0 ; 0 0 0.000025];
   sigma_landmark = [ 25 0 ; 0 25 ];
 
   %p_dim = size(gt_traj, 2);
