@@ -126,7 +126,5 @@ function slam_2D_nonlinear(odom,observations, r2_prior)
       %end
   end
 
-
-  %evaluate_method('Nonlinear SLAM', traj, landmarks, odom, gt_traj, gt_landmarks, true);
   save ('results','landmarks','traj','A','b','x','landmark_map');
 end
