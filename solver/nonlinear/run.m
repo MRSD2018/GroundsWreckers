@@ -1,15 +1,9 @@
 close all; clc;  clear;
 
-
 robot1_odom_data =     '../../csv/firstfloor_hallway/odom.csv';
 robot1_landmark_data = '../../csv/firstfloor_hallway/landmarks.csv';
 robot2_odom_data =     '../../csv/firstfloor_loop/odom.csv'; % global?
 robot2_landmark_data = '../../csv/firstfloor_loop/landmarks.csv';
-
-%hallway is global
-%loop origin is at , like x=35 , y = 5
-
-
 
 addpath('../util');
 odom1         = csvread ( robot1_odom_data     );
@@ -18,23 +12,19 @@ odom2         = csvread ( robot2_odom_data     );
 observations2 = csvread ( robot2_landmark_data );
 
 
-%%%%
-%od_cap = 2
-%odom1 = odom1 ( 1:od_cap , : );
-%observations1 = observations1 ( observations1(:,1) <= od_cap , : )
-%%%
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Solve Robot 1 and Robot 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%slam_2D_nonlinear ( odom1 , observations1 )
-%slam_2D_nonlinear ( odom2, observations2 )
+slam_2D_nonlinear ( odom1 , observations1 )
+movefile results.mat ../../csv/firstfloor_hallway/
+slam_2D_nonlinear ( odom2, observations2 )
+movefile results.mat ../../csv/firstfloor_loop/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Compute robot 2 transform prior %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+transform
 load ('H21')
-%ransac_transform = inv ( ransac_transform )
 
 prior = struct
 prior.x = ransac_transform ( 1 , 3 );
@@ -44,22 +34,6 @@ prior.x_cov  = 10;
 prior.y_cov  = 10;
 prior.th_cov = 10;
 prior.od_id = size ( odom1 , 1 ) + 1; % pose at which robot_2 starts
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% For test porpoises %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%prior.x = 35
-%prior.y = 5
-%prior.theta = 0.3475
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% HACK For test porpoises %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%{
-prior.od_id = 3;
-odom1 = odom1( 1:prior.od_id , : );
-observations1 = observations1 ( observations1 ( : , 1 ) < prior.od_id , : )
-%}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Adjust pose ids for robot 2 to append to robot 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,7 +52,21 @@ slam_2D_nonlinear ( odom_full , observations_full , prior )
 
 
 %{
-%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% HACK For test porpoises %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%od_cap = 2
+%odom1 = odom1 ( 1:od_cap , : );
+%observations1 = observations1 ( observations1(:,1) <= od_cap , : )
+%%%
+prior.od_id = 3;
+odom1 = odom1( 1:prior.od_id , : );
+observations1 = observations1 ( observations1 ( : , 1 ) < prior.od_id , : )
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Fake data for test porpoises %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %global
 fl = 4 % fake length
 poses1 = 0:fl; %id
