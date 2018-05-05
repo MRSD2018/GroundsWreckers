@@ -107,7 +107,6 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l, r2_prior 
     %% slice measurement %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    %TODO: CHECK IF ODOM INPUT IS ORDERED VL; VR or VR; VL
     vl =  odom ( u  , 1 );
     vr =  odom ( u  , 2 );
 
@@ -127,7 +126,6 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l, r2_prior 
     %% Extract values from observation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    
-    %TODO: CHECK TO SEE IF INDEX TO GET POSE AND OBSERVATION ID IS CORRECT
     i   = obs ( o + 1 , 1 ); % pose i at observation o
     l   = obs ( o + 1 , 2 ); % landmark at obseravation o
     

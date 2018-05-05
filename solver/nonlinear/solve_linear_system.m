@@ -35,5 +35,4 @@ function x = solve_linear_system(A, b)
   y = forward_sub ( R' , A ( : , p )'  * b );
   x = back_sub    ( R  , y      );
   x ( p ) = x;
-  %x = ( ( ( A' * A ) ^ -1 ) * A' )* b
 end
